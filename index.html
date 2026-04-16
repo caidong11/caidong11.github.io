@@ -7,6 +7,16 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
 body {
   background-image: 
     linear-gradient(to bottom, rgba(248,250,252,0.85), rgba(248,250,252,0.98)),
@@ -14,7 +24,6 @@ body {
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  min-height: 100vh;
   font-family: system-ui, sans-serif;
 }
 .transition-tri {
@@ -44,9 +53,27 @@ body {
   visibility: hidden;
   transition: opacity 0.4s ease, visibility 0.4s ease;
   overflow-y: auto;
-  padding: 2rem 1.5rem;
+  padding: 2rem 1rem;
+  width: 100%;
 }
 .detail-layer.show {
+  opacity: 1;
+  visibility: visible;
+}
+.sub-detail-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(255,255,255,1);
+  backdrop-filter: blur(15px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  overflow-y: auto;
+  padding: 2rem 1rem;
+  width: 100%;
+}
+.sub-detail-layer.show {
   opacity: 1;
   visibility: visible;
 }
@@ -88,12 +115,20 @@ body {
   background: rgba(0,0,0,0.05);
   margin: 8px 0;
 }
+.content-card {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.content-card:hover {
+  transform: translateX(4px);
+}
 </style>
 </head>
 <body>
 <div class="transition-tri" id="triAnim"></div>
+
 <div class="detail-layer" id="detailLayer">
-  <button id="closeBtn" class="fixed top-6 right-6 w-12 h-12 rounded-full bg-blue-800 text-white flex items-center justify-center shadow-lg">
+  <button id="closeBtn" class="fixed top-6 right-6 w-12 h-12 rounded-full bg-blue-800 text-white flex items-center justify-center shadow-lg z-100">
     <i class="fa-solid fa-xmark text-xl"></i>
   </button>
   <div class="max-w-xl mx-auto mt-16">
@@ -101,13 +136,25 @@ body {
     <div class="grid gap-5" id="layerContent"></div>
   </div>
 </div>
-<div class="max-w-2xl mx-auto px-6 py-12 relative">
+
+<div class="sub-detail-layer" id="subDetailLayer">
+  <button id="closeSubBtn" class="fixed top-6 right-6 w-12 h-12 rounded-full bg-blue-900 text-white flex items-center justify-center shadow-lg z-101">
+    <i class="fa-solid fa-xmark text-xl"></i>
+  </button>
+  <div class="max-w-xl mx-auto mt-16">
+    <h2 class="text-3xl font-light mb-6 text-slate-900" id="subLayerTitle">Sub Title</h2>
+    <div class="space-y-6 text-lg text-slate-700 leading-relaxed" id="subLayerContent"></div>
+  </div>
+</div>
+
+<div class="max-w-2xl mx-auto px-4 py-12 relative w-full">
   <header class="flex justify-between items-center mb-16">
     <div class="text-3xl font-medium text-slate-900">DESIGN·PORTFOLIO</div>
     <button id="menuBtn" class="w-14 h-14 rounded-full bg-white/80 backdrop-blur-sm shadow-sm flex items-center justify-center relative z-50">
       <i class="fa-solid fa-bars text-2xl text-slate-700"></i>
     </button>
   </header>
+
   <div id="dropdownMenu" class="dropdown-menu">
     <div class="dropdown-item"><i class="fa-solid fa-user text-blue-700"></i><span>Profile</span></div>
     <div class="dropdown-item"><i class="fa-solid fa-cog text-blue-700"></i><span>Settings</span></div>
@@ -116,13 +163,15 @@ body {
     <div class="dropdown-item"><i class="fa-solid fa-question-circle text-blue-700"></i><span>Help</span></div>
     <div class="dropdown-item"><i class="fa-solid fa-sign-out-alt text-red-500"></i><span>Logout</span></div>
   </div>
+
   <section class="mb-16">
     <h1 class="text-5xl font-light leading-tight mb-6">
       Minimal<br><span class="font-medium text-blue-900">Visual Design</span>
     </h1>
-    <p class="text-xl text-slate-500">Click the cards to open new layers</p>
+    <p class="text-xl text-slate-500">Click the cards to open layers</p>
   </section>
-  <div class="grid grid-cols-2 gap-6">
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
     <div class="card-item bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col items-center text-center" data-id="1">
       <i class="fa-solid fa-palette text-5xl text-blue-800 mb-4"></i>
       <h3 class="text-2xl font-medium text-slate-800">Visual Design</h3>
@@ -141,27 +190,91 @@ body {
     </div>
   </div>
 </div>
+
 <script>
 const categoryData = {
-  1:{title:"Visual Design",items:[
-    {icon:"fa-palette",name:"Logo Design",desc:"Create exclusive brand logos to improve recognition"},
-    {icon:"fa-layer-group",name:"VI System",desc:"Complete visual identity for consistent branding"},
-    {icon:"fa-poster",name:"Poster Design",desc:"Eye-catching visuals for all platforms"}
-  ]},
-  2:{title:"Web Development",items:[
-    {icon:"fa-code",name:"Frontend Development",desc:"Clean HTML/CSS/JS with responsive layout"},
-    {icon:"fa-film",name:"Interactive Animation",desc:"Smooth transitions for premium experience"},
-    {icon:"fa-mobile-alt",name:"Responsive Design",desc:"Works on mobile, tablet & desktop"}
-  ]},
-  3:{title:"Photography",items:[
-    {icon:"fa-user",name:"Portrait Retouch",desc:"Professional portrait shooting & editing"},
-    {icon:"fa-mountain",name:"Landscape Shooting",desc:"High-quality nature & scenery photos"}
-  ]},
-  4:{title:"Web Custom",items:[
-    {icon:"fa-building",name:"Company Website",desc:"Professional site for business & brand"},
-    {icon:"fa-user-tie",name:"Personal Portfolio",desc:"Custom website for designers & creators"}
-  ]}
+  1:{
+    title:"Visual Design",
+    items:[
+      {
+        icon:"fa-palette",
+        name:"Logo Design",
+        desc:"Create exclusive brand logos to improve recognition",
+        subContent:"Professional logo design includes brand symbols, standard colors and fonts. Vector source files are provided, suitable for all online and offline scenarios, ensuring originality and uniqueness."
+      },
+      {
+        icon:"fa-layer-group",
+        name:"VI System",
+        desc:"Complete visual identity for consistent branding",
+        subContent:"Full set of VI visual system, covering basic and application systems, unifying brand visual language, and improving brand professionalism and recognition."
+      },
+      {
+        icon:"fa-poster",
+        name:"Poster Design",
+        desc:"Eye-catching visuals for all platforms",
+        subContent:"Design of posters, panels and brochures with unified style and attractive visuals, suitable for social media, offline activities, exhibitions and other scenarios."
+      }
+    ]
+  },
+  2:{
+    title:"Web Development",
+    items:[
+      {
+        icon:"fa-code",
+        name:"Frontend Development",
+        desc:"Clean HTML/CSS/JS with responsive layout",
+        subContent:"Handwritten front-end code with clear structure and fast loading, compatible with all mainstream browsers, supporting full adaptation of PC, mobile and tablet."
+      },
+      {
+        icon:"fa-film",
+        name:"Interactive Animation",
+        desc:"Smooth transitions for premium experience",
+        subContent:"Add smooth interactive animations, scrolling effects and transition animations to enhance website texture and user experience."
+      },
+      {
+        icon:"fa-mobile-alt",
+        name:"Responsive Design",
+        desc:"Works on mobile, tablet & desktop",
+        subContent:"Fully responsive layout that automatically adapts to different screen sizes, with no white borders, overflow or horizontal scrolling on mobile."
+      }
+    ]
+  },
+  3:{
+    title:"Photography",
+    items:[
+      {
+        icon:"fa-user",
+        name:"Portrait Retouch",
+        desc:"Professional portrait shooting & editing",
+        subContent:"Portrait retouching with texture retention, optimized light and shadow, unified skin tone, natural and advanced without distortion, suitable for commercial and personal use."
+      },
+      {
+        icon:"fa-mountain",
+        name:"Landscape Shooting",
+        desc:"High-quality nature & scenery photos",
+        subContent:"Landscape photography and post-processing with high-definition image quality and color restoration, usable for wallpapers, official websites and promotional materials."
+      }
+    ]
+  },
+  4:{
+    title:"Web Custom",
+    items:[
+      {
+        icon:"fa-building",
+        name:"Company Website",
+        desc:"Professional site for business & brand",
+        subContent:"Custom enterprise official website, including homepage, about us, product center, news, contact us, supporting background management."
+      },
+      {
+        icon:"fa-user-tie",
+        name:"Personal Portfolio",
+        desc:"Custom website for designers & creators",
+        subContent:"Personal portfolio website with minimal style, displaying works and skills, one-click deployment and online launch."
+      }
+    ]
+  }
 };
+
 const triAnim = document.getElementById('triAnim');
 const detailLayer = document.getElementById('detailLayer');
 const layerTitle = document.getElementById('layerTitle');
@@ -170,14 +283,23 @@ const closeBtn = document.getElementById('closeBtn');
 const cardItems = document.querySelectorAll('.card-item');
 const menuBtn = document.getElementById('menuBtn');
 const dropdownMenu = document.getElementById('dropdownMenu');
+
+const subDetailLayer = document.getElementById('subDetailLayer');
+const subLayerTitle = document.getElementById('subLayerTitle');
+const subLayerContent = document.getElementById('subLayerContent');
+const closeSubBtn = document.getElementById('closeSubBtn');
+
 cardItems.forEach(card=>{
   card.addEventListener('click',()=>{
     const data = categoryData[card.dataset.id];
     layerTitle.textContent = data.title;
-    layerContent.innerHTML = data.items.map(i=>`
-      <div class="p-6 bg-white rounded-2xl shadow-sm flex items-start gap-4">
+    layerContent.innerHTML = data.items.map((i,index)=>`
+      <div class="p-6 bg-white rounded-2xl shadow-sm flex items-start gap-4 content-card" data-index="${index}" data-pid="${card.dataset.id}">
         <i class="fa-solid ${i.icon} text-3xl text-blue-800 mt-1"></i>
-        <div><h4 class="text-xl font-medium">${i.name}</h4><p class="text-slate-500">${i.desc}</p></div>
+        <div>
+          <h4 class="text-xl font-medium">${i.name}</h4>
+          <p class="text-slate-500">${i.desc}</p>
+        </div>
       </div>
     `).join('');
     triAnim.classList.add('active');
@@ -188,14 +310,32 @@ cardItems.forEach(card=>{
     }, 450);
   });
 });
+
+layerContent.addEventListener('click',(e)=>{
+  const card = e.target.closest('.content-card');
+  if(!card) return;
+  const pid = card.dataset.pid;
+  const index = card.dataset.index;
+  const item = categoryData[pid].items[index];
+  subLayerTitle.textContent = item.name;
+  subLayerContent.textContent = item.subContent;
+  subDetailLayer.classList.add('show');
+});
+
 closeBtn.addEventListener('click',()=>{
   detailLayer.classList.remove('show');
 });
+closeSubBtn.addEventListener('click',()=>{
+  subDetailLayer.classList.remove('show');
+});
+
 menuBtn.addEventListener('click',e=>{
   e.stopPropagation();
   dropdownMenu.classList.toggle('show');
 });
-document.addEventListener('click',()=>dropdownMenu.classList.remove('show'));
+document.addEventListener('click',()=>{
+  dropdownMenu.classList.remove('show');
+});
 </script>
 </body>
 </html>
