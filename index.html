@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Minimal Portfolio</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+body {
+  background-image: 
+    linear-gradient(to bottom, rgba(248,250,252,0.85), rgba(248,250,252,0.98)),
+    url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+  font-family: system-ui, sans-serif;
+}
+.transition-tri {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(135, 206, 235, 0.4);
+  clip-path: polygon(50% 50%, 50% 50%, 50% 50%);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none;
+  opacity: 0;
+}
+.transition-tri.active {
+  opacity: 1;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+.transition-tri.fade-out {
+  opacity: 0;
+}
+.detail-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  overflow-y: auto;
+  padding: 2rem 1.5rem;
+}
+.detail-layer.show {
+  opacity: 1;
+  visibility: visible;
+}
+.dropdown-menu {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 9997;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  padding: 12px 0;
+  min-width: 200px;
+  transform: translateY(-10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+.dropdown-menu.show {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.dropdown-item {
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #334155;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.dropdown-item:hover {
+  background: rgba(135, 206, 235, 0.2);
+}
+.dropdown-divider {
+  height: 1px;
+  background: rgba(0,0,0,0.05);
+  margin: 8px 0;
+}
+</style>
+</head>
+<body>
+<div class="transition-tri" id="triAnim"></div>
+<div class="detail-layer" id="detailLayer">
+  <button id="closeBtn" class="fixed top-6 right-6 w-12 h-12 rounded-full bg-blue-800 text-white flex items-center justify-center shadow-lg">
+    <i class="fa-solid fa-xmark text-xl"></i>
+  </button>
+  <div class="max-w-xl mx-auto mt-16">
+    <h2 class="text-3xl font-light mb-8 text-slate-900" id="layerTitle">Title</h2>
+    <div class="grid gap-5" id="layerContent"></div>
+  </div>
+</div>
+<div class="max-w-2xl mx-auto px-6 py-12 relative">
+  <header class="flex justify-between items-center mb-16">
+    <div class="text-3xl font-medium text-slate-900">DESIGN·PORTFOLIO</div>
+    <button id="menuBtn" class="w-14 h-14 rounded-full bg-white/80 backdrop-blur-sm shadow-sm flex items-center justify-center relative z-50">
+      <i class="fa-solid fa-bars text-2xl text-slate-700"></i>
+    </button>
+  </header>
+  <div id="dropdownMenu" class="dropdown-menu">
+    <div class="dropdown-item"><i class="fa-solid fa-user text-blue-700"></i><span>Profile</span></div>
+    <div class="dropdown-item"><i class="fa-solid fa-cog text-blue-700"></i><span>Settings</span></div>
+    <div class="dropdown-item"><i class="fa-solid fa-bell text-blue-700"></i><span>Notifications</span></div>
+    <div class="dropdown-divider"></div>
+    <div class="dropdown-item"><i class="fa-solid fa-question-circle text-blue-700"></i><span>Help</span></div>
+    <div class="dropdown-item"><i class="fa-solid fa-sign-out-alt text-red-500"></i><span>Logout</span></div>
+  </div>
+  <section class="mb-16">
+    <h1 class="text-5xl font-light leading-tight mb-6">
+      Minimal<br><span class="font-medium text-blue-900">Visual Design</span>
+    </h1>
+    <p class="text-xl text-slate-500">Click the cards to open new layers</p>
+  </section>
+  <div class="grid grid-cols-2 gap-6">
+    <div class="card-item bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col items-center text-center" data-id="1">
+      <i class="fa-solid fa-palette text-5xl text-blue-800 mb-4"></i>
+      <h3 class="text-2xl font-medium text-slate-800">Visual Design</h3>
+    </div>
+    <div class="card-item bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col items-center text-center" data-id="2">
+      <i class="fa-solid fa-mobile text-5xl text-blue-800 mb-4"></i>
+      <h3 class="text-2xl font-medium text-slate-800">Web Development</h3>
+    </div>
+    <div class="card-item bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col items-center text-center" data-id="3">
+      <i class="fa-solid fa-image text-5xl text-blue-800 mb-4"></i>
+      <h3 class="text-2xl font-medium text-slate-800">Photography</h3>
+    </div>
+    <div class="card-item bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col items-center text-center" data-id="4">
+      <i class="fa-solid fa-globe text-5xl text-blue-800 mb-4"></i>
+      <h3 class="text-2xl font-medium text-slate-800">Web Custom</h3>
+    </div>
+  </div>
+</div>
+<script>
+const categoryData = {
+  1:{title:"Visual Design",items:[
+    {icon:"fa-palette",name:"Logo Design",desc:"Create exclusive brand logos to improve recognition"},
+    {icon:"fa-layer-group",name:"VI System",desc:"Complete visual identity for consistent branding"},
+    {icon:"fa-poster",name:"Poster Design",desc:"Eye-catching visuals for all platforms"}
+  ]},
+  2:{title:"Web Development",items:[
+    {icon:"fa-code",name:"Frontend Development",desc:"Clean HTML/CSS/JS with responsive layout"},
+    {icon:"fa-film",name:"Interactive Animation",desc:"Smooth transitions for premium experience"},
+    {icon:"fa-mobile-alt",name:"Responsive Design",desc:"Works on mobile, tablet & desktop"}
+  ]},
+  3:{title:"Photography",items:[
+    {icon:"fa-user",name:"Portrait Retouch",desc:"Professional portrait shooting & editing"},
+    {icon:"fa-mountain",name:"Landscape Shooting",desc:"High-quality nature & scenery photos"}
+  ]},
+  4:{title:"Web Custom",items:[
+    {icon:"fa-building",name:"Company Website",desc:"Professional site for business & brand"},
+    {icon:"fa-user-tie",name:"Personal Portfolio",desc:"Custom website for designers & creators"}
+  ]}
+};
+const triAnim = document.getElementById('triAnim');
+const detailLayer = document.getElementById('detailLayer');
+const layerTitle = document.getElementById('layerTitle');
+const layerContent = document.getElementById('layerContent');
+const closeBtn = document.getElementById('closeBtn');
+const cardItems = document.querySelectorAll('.card-item');
+const menuBtn = document.getElementById('menuBtn');
+const dropdownMenu = document.getElementById('dropdownMenu');
+cardItems.forEach(card=>{
+  card.addEventListener('click',()=>{
+    const data = categoryData[card.dataset.id];
+    layerTitle.textContent = data.title;
+    layerContent.innerHTML = data.items.map(i=>`
+      <div class="p-6 bg-white rounded-2xl shadow-sm flex items-start gap-4">
+        <i class="fa-solid ${i.icon} text-3xl text-blue-800 mt-1"></i>
+        <div><h4 class="text-xl font-medium">${i.name}</h4><p class="text-slate-500">${i.desc}</p></div>
+      </div>
+    `).join('');
+    triAnim.classList.add('active');
+    setTimeout(()=>triAnim.classList.add('fade-out'), 300);
+    setTimeout(()=>{
+      triAnim.classList.remove('active','fade-out');
+      detailLayer.classList.add('show');
+    }, 450);
+  });
+});
+closeBtn.addEventListener('click',()=>{
+  detailLayer.classList.remove('show');
+});
+menuBtn.addEventListener('click',e=>{
+  e.stopPropagation();
+  dropdownMenu.classList.toggle('show');
+});
+document.addEventListener('click',()=>dropdownMenu.classList.remove('show'));
+</script>
+</body>
+</html>
